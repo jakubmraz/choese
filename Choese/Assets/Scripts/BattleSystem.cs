@@ -20,6 +20,7 @@ public class BattleSystem : MonoBehaviour
     public BattleHUD playerHUD;
     public BattleHUD enemyHUD;
     public ActionHUD actionHUD;
+    public BattleHUD textHUD;
 
         // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class BattleSystem : MonoBehaviour
 
         playerHUD.SetHUD(playerUnit);
         enemyHUD.SetHUD(enemyUnit);
+        textHUD.UpdateBattleText($"You have approached {enemyUnit.enemyName}.");
 
         yield return new WaitForSeconds(2f);
 
@@ -48,6 +50,7 @@ public class BattleSystem : MonoBehaviour
     void PlayerTurn()
     {
         actionHUD.ShowActionHUD();
+        textHUD.UpdateBattleText("Select how to lay waste to them.");
     }
 
     public void OnAttackButton()
@@ -60,9 +63,10 @@ public class BattleSystem : MonoBehaviour
     {
         bool isEnemyDead = enemyUnit.TakeDamage(playerUnit.playerDamage);
 
+        textHUD.UpdateBattleText($"You have hurt {enemyUnit.enemyName} for (code damage here)!");
         enemyHUD.SetHP(enemyUnit.enemyCurrentHP);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         if (isEnemyDead)
         {
@@ -80,11 +84,11 @@ public class BattleSystem : MonoBehaviour
     {
         if (State == BattleState.WON)
         {
-            //u won
+            textHUD.UpdateBattleText($"You have destroyed {enemyUnit.enemyName} epic style.");
         }
         else if (State == BattleState.LOST)
         {
-            //u lost
+            textHUD.UpdateBattleText("You have pathetically lost like the pathetic loser you are.");
         }
     }
 
@@ -92,9 +96,10 @@ public class BattleSystem : MonoBehaviour
     {
         bool isPlayerDead = playerUnit.TakeDamage(enemyUnit.enemyDamage);
 
+        textHUD.UpdateBattleText($"{enemyUnit.enemyName} used Death and Destruction!");
         playerHUD.SetHP(playerUnit.playerCurrentHP);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         if (isPlayerDead)
         {
