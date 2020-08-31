@@ -14,15 +14,15 @@ public class BattleSystem : MonoBehaviour
     public Transform playerBattleLocation;
     public Transform enemyBattleLocation;
 
-    private PlayerBattle playerUnit;
-    private Enemy enemyUnit;
+    private BattleUnit playerUnit;
+    private BattleUnit enemyUnit;
 
     public BattleHUD playerHUD;
     public BattleHUD enemyHUD;
     public ActionHUD actionHUD;
     public BattleHUD textHUD;
 
-        // Start is called before the first frame update
+    // Start is called before the first frame update
     void Start()
     {
         State = BattleState.START;
@@ -32,14 +32,14 @@ public class BattleSystem : MonoBehaviour
     IEnumerator SetupBattle()
     {
         GameObject playerGameObject = Instantiate(playerPrefab, playerBattleLocation);
-        playerUnit = playerGameObject.GetComponent<PlayerBattle>();
+        playerUnit = playerGameObject.GetComponent<BattleUnit>();
 
         GameObject enemyGameObject = Instantiate(enemyPrefab, enemyBattleLocation);
-        enemyUnit = enemyGameObject.GetComponent<Enemy>();
+        enemyUnit = enemyGameObject.GetComponent<BattleUnit>();
 
         playerHUD.SetHUD(playerUnit);
         enemyHUD.SetHUD(enemyUnit);
-        textHUD.UpdateBattleText($"You have approached {enemyUnit.enemyName}.");
+        textHUD.UpdateBattleText($"You have approached {enemyUnit.unitName}.");
 
         yield return new WaitForSeconds(2f);
 
@@ -49,6 +49,9 @@ public class BattleSystem : MonoBehaviour
 
     void PlayerTurn()
     {
+        //Drops the defense status at the start of the turn again
+        playerUnit.StopDefending();
+
         actionHUD.ShowActionHUD();
         textHUD.UpdateBattleText("Select how to lay waste to them.");
     }
@@ -59,12 +62,28 @@ public class BattleSystem : MonoBehaviour
         StartCoroutine(PlayerAttack());
     }
 
+    public void OnDefenseButton()
+    {
+        actionHUD.HideActionHUD();
+        playerUnit.StartDefending();
+
+        textHUD.UpdateBattleText($"You are defending.");
+
+        StartCoroutine(PlayerDefend());
+    }
+
     IEnumerator PlayerAttack()
     {
-        bool isEnemyDead = enemyUnit.TakeDamage(playerUnit.playerDamage);
+        //Used to calculate how much dmg was dealt for battle text
+        int HPbefore = enemyUnit.unitCurrentHP;
+        int HPdifference;
 
-        textHUD.UpdateBattleText($"You have hurt {enemyUnit.enemyName} for (code damage here)!");
-        enemyHUD.SetHP(enemyUnit.enemyCurrentHP);
+        bool isEnemyDead = enemyUnit.TakeDamage(playerUnit.unitDamage);
+
+        HPdifference = HPbefore - enemyUnit.unitCurrentHP;
+
+        textHUD.UpdateBattleText($"You have hurt {enemyUnit.unitName} for {HPdifference} DMG!");
+        enemyHUD.SetHP(enemyUnit.unitCurrentHP);
 
         yield return new WaitForSeconds(1f);
 
@@ -80,11 +99,18 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
+    //This is literally just here for the 1 second delay
+    IEnumerator PlayerDefend()
+    {
+        yield return new WaitForSeconds(1f);
+        StartCoroutine(EnemyTurn());
+    }
+
     void EndBattle()
     {
         if (State == BattleState.WON)
         {
-            textHUD.UpdateBattleText($"You have destroyed {enemyUnit.enemyName} epic style.");
+            textHUD.UpdateBattleText($"You have destroyed {enemyUnit.unitName} epic style.");
         }
         else if (State == BattleState.LOST)
         {
@@ -94,10 +120,10 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator EnemyTurn()
     {
-        bool isPlayerDead = playerUnit.TakeDamage(enemyUnit.enemyDamage);
+        bool isPlayerDead = playerUnit.TakeDamage(enemyUnit.unitDamage);
 
-        textHUD.UpdateBattleText($"{enemyUnit.enemyName} used Death and Destruction!");
-        playerHUD.SetHP(playerUnit.playerCurrentHP);
+        textHUD.UpdateBattleText($"{enemyUnit.unitName} used Death and Destruction!");
+        playerHUD.SetHP(playerUnit.unitCurrentHP);
 
         yield return new WaitForSeconds(1f);
 

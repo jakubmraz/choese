@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2089311334609070133}
-  - component: {fileID: 3329935420182687327}
+  - component: {fileID: 8787790080252239013}
   m_Layer: 0
   m_Name: Enemy1
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3329935420182687327
+--- !u!114 &8787790080252239013
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,13 +41,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2975316513139575781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 602f39891c400e945934106dbcb98e35, type: 3}
+  m_Script: {fileID: 11500000, guid: 94458c2df71c4674981a7c8935c8720f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Timothy
-  enemyDamage: 5
-  enemyMaxHP: 30
-  enemyCurrentHP: 30
+  unitName: Timothy
+  unitHP: 50
+  unitDamage: 10
+  unitDefense: 5
+  unitCurrentHP: 50
+  unitState: 0
 --- !u!1 &6746906122159360862
 GameObject:
   m_ObjectHideFlags: 0
